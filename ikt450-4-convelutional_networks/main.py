@@ -12,17 +12,19 @@ import os
 import numpy as np
 import tensorflow as tf
 import helper
-
+import models
+import multiprocessing
+import custemcallbacks 
 
 def main():
     # Set up helper
-    helper.static_name.model_name = "TestModel"
+    helper.static_name.model_name = "vgg_like_model"
 
     # Get the data as datasets
     evaluation_path = os.path.join("food-11", "validation")
     traning_path = os.path.join("food-11", "training")
     validation_path = os.path.join("food-11", "validation")
-    image_size = (128, 128)
+    image_size = (244, 244)
 
     # Split the data
     traning_dataset = tf.keras.utils.image_dataset_from_directory(
@@ -31,7 +33,7 @@ def main():
         image_size=image_size,
         labels="inferred",
         label_mode="int",
-        batch_size=16,
+        batch_size=32,
     )
     traning_subset = traning_dataset.take(int(0.1 * len(traning_dataset)))
     val_dataset = tf.keras.utils.image_dataset_from_directory(
@@ -40,7 +42,7 @@ def main():
         image_size=image_size,
         labels="inferred",
         label_mode="int",
-        batch_size=16,
+        batch_size=32,
     )
     val_subset = val_dataset.take(int(0.1 * len(val_dataset)))
 
@@ -57,72 +59,42 @@ def main():
     helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
 
     # define the model
-    inputs = tf.keras.Input(shape=image_size + (3,))
-
-    ## Preproccesing
-    x = tf.keras.layers.Rescaling(scale=1.0 / image_size[0])(inputs)
-
-    ## Traning Randomness
-    x = tf.keras.layers.RandomRotation(factor=(0.1, 0.1))(x)
-    ## Convelutional layers
-    x = tf.keras.layers.Conv2D(32, 3, padding="Same", strides=1, activation="ReLU")(x)
-
-    x = tf.keras.layers.Flatten()(x)
-    ## Dense layers
-    output = tf.keras.layers.Dense(units=11, activation="softmax")(x)
-
-    # create and Compile the model
-    model = tf.keras.Model(inputs, output)
+    model = models.make_vgg_like_convo_model(input_shape=image_size + (3,), num_classes=11)
 
     helper.plot_model(model)
 
     metrics = [
         tf.keras.metrics.CategoricalAccuracy(),
     ]
+
+    initial_learning_rate = 0.1
+
+    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+        initial_learning_rate,
+        decay_steps=100,
+        decay_rate=0.05
+    )
+
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.SGD(),
+        optimizer=tf.keras.optimizers.SGD(
+            learning_rate=lr_schedule, 
+            momentum=0.9
+        ),
         loss=tf.keras.losses.MeanSquaredError(),
         metrics=metrics,
     )
 
     # Fit the model
-    epochs = 2
+    epochs = 100
     # Define Callback functions
-
-    class CustemCallbacks(tf.keras.callbacks.Callback):
-        def __init__(self, test_data):
-            self.test_dataset = test_data
-
-        def on_epoch_end(self, epoch, log=None):
-            # Evaluate the model
-            ## First make prediction on the dataset.
-            y_pred = model.predict(self.test_dataset)
-            y_pred = np.argmax(y_pred, axis=1)
-            ## Then extract to true labels
-            y_true = self.test_dataset.map(lambda x, y: y)
-            y_true = np.array(list(y_true.as_numpy_iterator()))
-            y_true = np.transpose(y_true)
-            y_true = np.squeeze(y_true)
-
-            helper.plot_confustion_matrix(
-                y=y_true,
-                y_hat=y_pred,
-                save=True,
-                show=False,
-                sub_dir="conv-matrixs",
-                epoch=epoch,
-            )
-            accraccy = np.sum(np.equal(y_true, y_pred)) / len(y_pred)
-            log["val_cal_accurracy"] = accraccy
 
     callbacks = [
         tf.keras.callbacks.ModelCheckpoint(
-           filepath=helper.static_name.get_timed_file_path("save_at_{epoch}.keras",
+           filepath=helper.static_name.get_timed_file_path("save_at_{epoch}.keras"),
            save_best_only=True
-            )
         ),
-        CustemCallbacks(val_subset.rebatch(1)),
+        custemcallbacks.CustemCallbacks(val_subset.rebatch(1)),
     ]
 
     history = model.fit(
