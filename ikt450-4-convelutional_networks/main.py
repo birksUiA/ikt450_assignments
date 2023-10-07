@@ -24,7 +24,10 @@ def main():
     traning_path = os.path.join("food-11", "training")
     validation_path = os.path.join("food-11", "validation")
     evaluation_path = os.path.join("food-11", "evaluation")
+
     image_size = (244, 244)
+
+    sub_set_procent = 0.3
 
     # Split the data
     traning_dataset = tf.keras.utils.image_dataset_from_directory(
@@ -35,7 +38,7 @@ def main():
         label_mode="int",
         batch_size=32,
     )
-    traning_subset = traning_dataset.take(int(0.1 * len(traning_dataset)))
+    traning_subset = traning_dataset.take(int(sub_set_procent * len(traning_dataset)))
     val_dataset = tf.keras.utils.image_dataset_from_directory(
         directory=validation_path,
         shuffle=True,
@@ -44,7 +47,7 @@ def main():
         label_mode="int",
         batch_size=32,
     )
-    val_subset = val_dataset.take(int(0.1 * len(val_dataset)))
+    val_subset = val_dataset.take(int(sub_set_procent * len(val_dataset)))
 
     eval_dataset = tf.keras.utils.image_dataset_from_directory(
         directory=evaluation_path,
@@ -54,7 +57,7 @@ def main():
         label_mode="int",
         batch_size=1,
     )
-    eval_subset = eval_dataset.take(int(0.1 * len(eval_dataset)))
+    eval_subset = eval_dataset.take(int(sub_set_procent * len(eval_dataset)))
 
     helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
 

@@ -119,8 +119,8 @@ def make_vgg_like_convo_model(input_shape, num_classes):
     ## Dense Layers
     x = tf.keras.layers.GlobalAvgPool2D()(x)
 
-    x = dense_block(x, 4096, activation="ReLU") 
 
+    x = dense_block(x, 4096, activation="ReLU") 
     x = dense_block(x, 4096, activation="ReLU") 
     x = dense_block(x, 1000, activation="ReLU") 
     outputs = dense_block(x, num_classes)
