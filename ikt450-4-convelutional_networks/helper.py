@@ -1,4 +1,3 @@
-from sys import prefix
 import sklearn.metrics
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -46,12 +45,13 @@ class static_name:
     @staticmethod
     def _set_up(model_name="unnamed_model"):
         static_name.time_string = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
-        if model_name == "ERROR":
+
+        if static_name.model_name == "ERROR":
             static_name.model_name = model_name
+
         static_name.output_dir = os.path.join(
             "output",
-            static_name.model_name,
-            static_name.time_string,
+            static_name.model_name + "-" +static_name.time_string
         )
         if not os.path.exists(os.path.join(static_name.output_dir)):
             os.makedirs(
@@ -62,7 +62,7 @@ class static_name:
         static_name.called_before = True
 
     @staticmethod
-    def get_timed_file_name(prefix):
+    def get_timed_name(prefix):
         if not isinstance(prefix, str):
             raise TypeError("prefix not string!")
 
@@ -82,7 +82,7 @@ class static_name:
         if sub_dir is None:
             return os.path.join(
                 static_name.output_dir,
-                static_name.get_timed_file_name(file_name),
+                file_name,
             )
         elif isinstance(sub_dir, str) or isinstance(sub_dir, os.PathLike):
             path = os.path.join(
@@ -180,7 +180,7 @@ def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True
     # Plot training loss
     plt.plot(accuracies, label="accuracies", linewidth=2, color="blue")
 
-    if accuracies_validation != None:
+    if accuracies_validation is not None:
         plt.plot(
             accuracies_validation,
             label="Validation Accuracies",
@@ -231,7 +231,7 @@ def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=
                 raise RuntimeError(f"Epochs needed for subdir conv epoch: {epoch} type: {type(epoch)}")
             plt.savefig(
                 static_name.get_timed_file_path(
-                    file_name=f"Confusion_matrix_{epoch}", 
+                    file_name=f"Confusion_matrix_{epoch}",
                     sub_dir=sub_dir
                 ),
                 dpi=static_name.dpi,
@@ -243,3 +243,14 @@ def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=
 
     if show:
         plt.show()
+
+def main():
+    model_name = "test"
+    static_name("test_model")
+
+    path = static_name.get_timed_file_path(model_name)
+    print(path)
+
+if __name__ == "__main__":
+    main()
+    exit()
