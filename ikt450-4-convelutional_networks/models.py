@@ -1,20 +1,48 @@
 import tensorflow as tf
 
+
+def dense_block(x, units, activation=None):
+    if activation is None:
+        if units == 1:
+            activation="sigmoid"
+        else:
+            activation="softmax"
+
+    x = tf.keras.layers.Dense(units=units)(x)
+    return tf.keras.layers.Activation(activation)(x)
+        
+
 ## Convelutional layers
-def convelutional_block(x, filters=32):
-    x = tf.keras.layers.Activation("ReLU")(x)
+def convelutional_block(x, filters=32, kernel_size=(3,3), padding="same", stides=1, normalise=True):
     x = tf.keras.layers.Conv2D(
-        kernel_size=(3, 3),
+        kernel_size=kernel_size,
         filters=filters,
-        padding="same",
-        strides=1,
+        padding=padding,
+        strides=stides,
         data_format="channels_last"
     )(x)
-    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Activation("ReLU")(x)
+    if normalise:
+        x = tf.keras.layers.BatchNormalization()(x)
     return x
+
 
 # Residual Convelutional layers
 def residual_block(x, filters=32):
+    previus_block_activation = x # Save input for residual
+    x = convelutional_block(x, filters) # Two convelutional layers
+    x = convelutional_block(x, filters)
+
+    # Residual addtion
+    residual = tf.keras.layers.Conv2D(filters, 1, strides=1, padding="same", data_format="channels_last")(
+        previus_block_activation
+    )
+    # Adding the convelutional and pooled output with the residual
+    return tf.keras.layers.add([x, residual])
+
+
+# Residual Convelutional layers
+def residual_cut_block(x, filters=32):
     previus_block_activation = x # Save input for residual
     x = convelutional_block(x, filters) # Two convelutional layers
     x = convelutional_block(x, filters)
@@ -29,23 +57,47 @@ def residual_block(x, filters=32):
     # Adding the convelutional and pooled output with the residual
     return tf.keras.layers.add([x, residual])
 
-def dense_block(x, units, activation=None):
-    if activation is None:
-        if units == 1:
-            activation="sigmoid"
-        else:
-            activation="softmax"
+def make_residual_model(input_shape, num_classes):
+    inputs = tf.keras.Input(shape=input_shape)
+    x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
+    
+    x = residual_block(x, 32)
+    x = residual_cut_block(x, 64)
+    x = tf.keras.layers.GlobalAvgPool2D()(x)
+    outputs = dense_block(x, num_classes)
+    
+    return tf.keras.Model(inputs, outputs)
 
-    x = tf.keras.layers.Dense(units=units)(x)
-    return tf.keras.layers.Activation(activation)(x)
-        
-def make_vgg_like_convo_model(input_shape, num_classes):
+    # Data Augmentation
+    
+def make_simple_convo_model(input_shape, num_classes):
     inputs = tf.keras.Input(shape=input_shape)
 
+    x = convelutional_block(inputs, 32)
+    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = convelutional_block(x, 64)
+    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = convelutional_block(x, 128)
+    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
 
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Activation("ReLU")(x)
+
+    x = dense_block(x, 1024) 
+    outputs = dense_block(x, num_classes)
+
+    return tf.keras.Model(inputs, outputs)
+
+def make_vgg_like_convo_model(input_shape, num_classes):
+
+    inputs = tf.keras.Input(shape=input_shape)
+
+    # Data augmentation 
+    x = tf.keras.layers.Rescaling(1/input_shape[0])(inputs)
+    
     ## Convelutional layers
 
-    x = convelutional_block(inputs, 64)
+    x = convelutional_block(x, 64)
     x = convelutional_block(x, 64)
     x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
     x = convelutional_block(x, 128)
@@ -74,25 +126,28 @@ def make_vgg_like_convo_model(input_shape, num_classes):
     outputs = dense_block(x, num_classes)
 
     return tf.keras.Model(inputs, outputs)
-        
-def make_simple_convo_model(input_shape, num_classes):
+    
+def make_simple_residual(input_shape, num_classes):
+
     inputs = tf.keras.Input(shape=input_shape)
 
-    x = convelutional_block(inputs, 32)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    # Data augmentation 
+    x = tf.keras.layers.Rescaling(1/input_shape[0])(inputs)
+    
+    ## Convelutional layers
+
     x = convelutional_block(x, 64)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
-    x = convelutional_block(x, 128)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
 
-    x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Activation("ReLU")(x)
+    ## Dense Layers
+    x = tf.keras.layers.GlobalAvgPool2D()(x)
 
-    x = dense_block(x, 1024) 
+    x = dense_block(x, 4096, activation="ReLU") 
+
+    x = dense_block(x, 4096, activation="ReLU") 
+    x = dense_block(x, 1000, activation="ReLU") 
     outputs = dense_block(x, num_classes)
 
     return tf.keras.Model(inputs, outputs)
-    
     
      
 def make_model_from_exsample(input_shape, num_classes):

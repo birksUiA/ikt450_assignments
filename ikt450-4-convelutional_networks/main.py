@@ -21,9 +21,9 @@ def main():
     helper.static_name.model_name = "vgg_like_model"
 
     # Get the data as datasets
-    evaluation_path = os.path.join("food-11", "validation")
     traning_path = os.path.join("food-11", "training")
     validation_path = os.path.join("food-11", "validation")
+    evaluation_path = os.path.join("food-11", "evaluation")
     image_size = (244, 244)
 
     # Split the data
@@ -59,7 +59,7 @@ def main():
     helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
 
     # define the model
-    model = models.make_vgg_like_convo_model(input_shape=image_size + (3,), num_classes=11)
+    model = models.make_residual_model(input_shape=image_size + (3,), num_classes=11)
 
     helper.plot_model(model)
 
@@ -86,7 +86,7 @@ def main():
     )
 
     # Fit the model
-    epochs = 100
+    epochs = 2
     # Define Callback functions
 
     callbacks = [

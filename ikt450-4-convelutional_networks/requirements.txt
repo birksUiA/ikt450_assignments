@@ -42,6 +42,16 @@ ml-dtypes==0.2.0
 mypy-extensions==1.0.0
 nodeenv==1.8.0
 numpy==1.26.0
+nvidia-cublas-cu11==11.11.3.6
+nvidia-cuda-cupti-cu11==11.8.87
+nvidia-cuda-nvcc-cu11==11.8.89
+nvidia-cuda-runtime-cu11==11.8.89
+nvidia-cudnn-cu11==8.7.0.84
+nvidia-cufft-cu11==10.9.0.58
+nvidia-curand-cu11==10.3.0.86
+nvidia-cusolver-cu11==11.4.1.48
+nvidia-cusparse-cu11==11.7.5.86
+nvidia-nccl-cu11==2.16.5
 oauthlib==3.2.2
 opt-einsum==3.3.0
 packaging==23.1
@@ -78,6 +88,7 @@ tensorboard-data-server==0.7.1
 tensorflow==2.14.0
 tensorflow-estimator==2.14.0
 tensorflow-io-gcs-filesystem==0.34.0
+tensorrt==8.5.3.1
 termcolor==2.3.0
 threadpoolctl==3.2.0
 tomli==2.0.1
