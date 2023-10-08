@@ -57,7 +57,7 @@ def residual_cut_block(x, filters=32):
     # Adding the convelutional and pooled output with the residual
     return tf.keras.layers.add([x, residual])
 
-def make_residual_model(input_shape, num_classes):
+def make_residual_model(input_shape, num_classes, name="residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
     x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
     
@@ -69,10 +69,7 @@ def make_residual_model(input_shape, num_classes):
     x = residual_cut_block(x, 256)
     x = residual_block(x, 256)
     x = residual_block(x, 256)
-    x = residual_block(x, 256)
-    x = residual_block(x, 256)
     x = residual_cut_block(x, 512)
-    x = residual_block(x, 512)
     x = residual_block(x, 512)
     x = residual_block(x, 512)
 
@@ -84,11 +81,11 @@ def make_residual_model(input_shape, num_classes):
     outputs = dense_block(x, num_classes)
 
     
-    return tf.keras.Model(inputs, outputs)
+    return tf.keras.Model(inputs, outputs, name=name)
 
     # Data Augmentation
     
-def make_simple_residual_model(input_shape, num_classes):
+def make_simple_residual_model(input_shape, num_classes, name="simple_residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
     x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
     
@@ -97,10 +94,10 @@ def make_simple_residual_model(input_shape, num_classes):
     x = tf.keras.layers.GlobalAvgPool2D()(x)
     outputs = dense_block(x, num_classes)
     
-    return tf.keras.Model(inputs, outputs)
+    return tf.keras.Model(inputs, outputs, name=name)
 
     # Data Augmentation
-def make_simple_convo_model(input_shape, num_classes):
+def make_simple_convo_model(input_shape, num_classes, name="simple_convo_model"):
     inputs = tf.keras.Input(shape=input_shape)
 
     x = convelutional_block(inputs, 32)
@@ -116,9 +113,9 @@ def make_simple_convo_model(input_shape, num_classes):
     x = dense_block(x, 1024) 
     outputs = dense_block(x, num_classes)
 
-    return tf.keras.Model(inputs, outputs)
+    return tf.keras.Model(inputs, outputs, name=name)
 
-def make_vgg_like_convo_model(input_shape, num_classes):
+def make_vgg_like_convo_model(input_shape, num_classes, name="vgg_like_model"):
 
     inputs = tf.keras.Input(shape=input_shape)
 
@@ -155,7 +152,7 @@ def make_vgg_like_convo_model(input_shape, num_classes):
     x = dense_block(x, 1000, activation="ReLU") 
     outputs = dense_block(x, num_classes)
 
-    return tf.keras.Model(inputs, outputs)
+    return tf.keras.Model(inputs, outputs, name=name)
     
 def make_simple_residual(input_shape, num_classes):
 
@@ -180,7 +177,7 @@ def make_simple_residual(input_shape, num_classes):
     return tf.keras.Model(inputs, outputs)
     
      
-def make_model_from_exsample(input_shape, num_classes):
+def make_model_from_exsample(input_shape, num_classes, name="model_from_keras_exsample"):
     inputs = tf.keras.Input(shape=input_shape)
 
     # Entry block
@@ -223,4 +220,4 @@ def make_model_from_exsample(input_shape, num_classes):
 
     x = tf.keras.layers.Dropout(0.5)(x)
     outputs = tf.keras.layers.Dense(units, activation=activation)(x)
-    return tf.keras.Model(inputs, outputs)
+    return tf.keras.Model(inputs, outputs, name=name)

@@ -8,26 +8,31 @@ to solve all problems I need
  - to save each model for later use
 """
 
-import os
 import numpy as np
 import tensorflow as tf
 import helper
 import dataloader
 import models
-import multiprocessing
-import custemcallbacks 
+import custemcallbacks
+
 
 def main():
     # Set up helper
-    helper.static_name.model_name = "vgg_like_model"
-    image_size=(244, 244)
-    subset_procent=0.1
-    traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(image_size, subset_procent)
+    image_size = (244, 244)
+    subset_procent = 0.1
+
+    traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(
+        image_size, subset_procent
+    )
+
     helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
 
     # define the model
-    model = models.make_residual_model(input_shape=image_size + (3,), num_classes=11)
-
+    model = models.make_residual_model(
+        input_shape=image_size + (3,), num_classes=11
+    )
+    print(model.name)
+    helper.static_name.model_name = model.name
     helper.plot_model(model)
 
     metrics = [
@@ -37,36 +42,28 @@ def main():
     initial_learning_rate = 0.1
 
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate,
-        decay_steps=100,
-        decay_rate=0.05
+        initial_learning_rate, decay_steps=100, decay_rate=0.05
     )
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.SGD(
-            learning_rate=lr_schedule, 
-            momentum=0.9
-        ),
+        optimizer=tf.keras.optimizers.SGD(learning_rate=lr_schedule, momentum=0.9),
         loss=tf.keras.losses.MeanSquaredError(),
         metrics=metrics,
     )
 
     # Fit the model
-    epochs = 2
+    epochs = 1
     # Define Callback functions
 
-    callbacks = [
-        tf.keras.callbacks.ModelCheckpoint(
-           filepath=helper.static_name.get_timed_file_path("save_at_{epoch}.keras"),
-           save_best_only=True
-        ),
-        custemcallbacks.CustemCallbacks(val_dataset.rebatch(1)),
+    callback_list = [
+        custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
+        custemcallbacks.SaveBestModel(),
     ]
 
     history = model.fit(
         traning_dataset,
         epochs=epochs,
-        callbacks=callbacks,
+        callbacks=callback_list,
         validation_data=val_dataset,
     )
 
@@ -75,7 +72,7 @@ def main():
     y_pred = model.predict(eval_dataset)
     y_pred = np.argmax(y_pred, axis=1)
     ## Then extract to true labels
-    y_true = eval_dataset.map(lambda x, y: y)
+    y_true = eval_dataset.rebatch(1).map(lambda x, y: y)
     y_true = np.array(list(y_true.as_numpy_iterator()))
     y_true = np.transpose(y_true)
     y_true = np.squeeze(y_true)

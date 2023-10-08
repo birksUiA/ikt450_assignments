@@ -1,9 +1,12 @@
 import tensorflow as tf
 import numpy as np
 import helper
-class CustemCallbacks(tf.keras.callbacks.Callback):
+
+
+class ConfusionMatrixCallback(tf.keras.callbacks.Callback):
     def __init__(self, test_data):
         self.test_dataset = test_data
+        self.best_loss = float('inf')
 
     def on_epoch_end(self, epoch, log=None):
         # Evaluate the model
@@ -26,3 +29,19 @@ class CustemCallbacks(tf.keras.callbacks.Callback):
         )
         accraccy = np.sum(np.equal(y_true, y_pred)) / len(y_pred)
         log["val_cal_accurracy"] = accraccy
+            
+class SaveBestModel(tf.keras.callbacks.Callback):
+
+    def __init__(self, best_loss=float('inf')):
+        self.best_loss=best_loss  
+
+    def on_epoch_end(self, epoch, log=None):
+        if log["val_loss"] < self.best_loss:
+            self.best_loss = log["val_loss"]
+            self.model.save(
+                helper.static_name.get_timed_file_path(
+                    sub_dir="saved_model",
+                    file_name=f"model_best_loss_at_epoch_{epoch}"
+                )
+            )
+            print(f"model saved at epoch {epoch}")
