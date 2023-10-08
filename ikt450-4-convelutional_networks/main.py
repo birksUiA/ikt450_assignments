@@ -14,7 +14,7 @@ import helper
 import dataloader
 import models
 import custemcallbacks
-
+import io
 
 def main():
     # Set up helper
@@ -31,9 +31,9 @@ def main():
     model = models.make_residual_model(
         input_shape=image_size + (3,), num_classes=11
     )
+    # Report on the defined model
     print(model.name)
-    helper.static_name.model_name = model.name
-    helper.plot_model(model)
+    model.summary()
 
     metrics = [
         tf.keras.metrics.CategoricalAccuracy(),
@@ -46,13 +46,13 @@ def main():
     )
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.SGD(learning_rate=lr_schedule, momentum=0.9),
-        loss=tf.keras.losses.MeanSquaredError(),
+        optimizer=tf.keras.optimizers.RMSprop(learning_rate=lr_schedule, momentum=0.9),
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=metrics,
     )
 
     # Fit the model
-    epochs = 1
+    epochs=10
     # Define Callback functions
 
     callback_list = [
