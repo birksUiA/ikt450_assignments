@@ -57,6 +57,26 @@ def residual_cut_block(x, filters=32):
     # Adding the convelutional and pooled output with the residual
     return tf.keras.layers.add([x, residual])
 
+def make_pretranied_inception_net_model(input_shape, num_classes, name="pre_tranined_inception_net"):
+    base_model = tf.keras.applictions.InceptionResNetV2(
+        weights="imagenet",
+        include_top=False,
+        input_tesor=tf.keras.Input(input_shape)
+    )
+
+    base_model.trainable = False
+
+    x = base_model.output
+    x = tf.keras.layers.GlobalAvgPool2D()(x)
+    x = dense_block(x, 256)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    x = dense_block(x, 128)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    outputs = dense_block(x, num_classes)
+
+    return tf.keras.Model(inputs=base_model.input, outputs=outputs, name=name)
+
+
 def make_residual_model(input_shape, num_classes, name="residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
     x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
