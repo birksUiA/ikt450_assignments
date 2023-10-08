@@ -61,6 +61,37 @@ def make_residual_model(input_shape, num_classes):
     inputs = tf.keras.Input(shape=input_shape)
     x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
     
+    x = residual_block(x, 64)
+    x = residual_block(x, 64)
+    x = residual_cut_block(x, 128)
+    x = residual_block(x, 128)
+    x = residual_block(x, 128)
+    x = residual_cut_block(x, 256)
+    x = residual_block(x, 256)
+    x = residual_block(x, 256)
+    x = residual_block(x, 256)
+    x = residual_block(x, 256)
+    x = residual_cut_block(x, 512)
+    x = residual_block(x, 512)
+    x = residual_block(x, 512)
+    x = residual_block(x, 512)
+
+    x = tf.keras.layers.GlobalAvgPool2D()(x)
+    x = dense_block(x, 1000)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    x = dense_block(x, 1000)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    outputs = dense_block(x, num_classes)
+
+    
+    return tf.keras.Model(inputs, outputs)
+
+    # Data Augmentation
+    
+def make_simple_residual_model(input_shape, num_classes):
+    inputs = tf.keras.Input(shape=input_shape)
+    x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
+    
     x = residual_block(x, 32)
     x = residual_cut_block(x, 64)
     x = tf.keras.layers.GlobalAvgPool2D()(x)
@@ -69,7 +100,6 @@ def make_residual_model(input_shape, num_classes):
     return tf.keras.Model(inputs, outputs)
 
     # Data Augmentation
-    
 def make_simple_convo_model(input_shape, num_classes):
     inputs = tf.keras.Input(shape=input_shape)
 

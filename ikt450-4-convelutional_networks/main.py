@@ -12,6 +12,7 @@ import os
 import numpy as np
 import tensorflow as tf
 import helper
+import dataloader
 import models
 import multiprocessing
 import custemcallbacks 
@@ -19,46 +20,9 @@ import custemcallbacks
 def main():
     # Set up helper
     helper.static_name.model_name = "vgg_like_model"
-
-    # Get the data as datasets
-    traning_path = os.path.join("food-11", "training")
-    validation_path = os.path.join("food-11", "validation")
-    evaluation_path = os.path.join("food-11", "evaluation")
-
-    image_size = (244, 244)
-
-    sub_set_procent = 0.3
-
-    # Split the data
-    traning_dataset = tf.keras.utils.image_dataset_from_directory(
-        directory=traning_path,
-        shuffle=True,
-        image_size=image_size,
-        labels="inferred",
-        label_mode="int",
-        batch_size=32,
-    )
-    traning_subset = traning_dataset.take(int(sub_set_procent * len(traning_dataset)))
-    val_dataset = tf.keras.utils.image_dataset_from_directory(
-        directory=validation_path,
-        shuffle=True,
-        image_size=image_size,
-        labels="inferred",
-        label_mode="int",
-        batch_size=32,
-    )
-    val_subset = val_dataset.take(int(sub_set_procent * len(val_dataset)))
-
-    eval_dataset = tf.keras.utils.image_dataset_from_directory(
-        directory=evaluation_path,
-        shuffle=True,
-        image_size=image_size,
-        labels="inferred",
-        label_mode="int",
-        batch_size=1,
-    )
-    eval_subset = eval_dataset.take(int(sub_set_procent * len(eval_dataset)))
-
+    image_size=(244, 244)
+    subset_procent=0.1
+    traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(image_size, subset_procent)
     helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
 
     # define the model
@@ -77,7 +41,6 @@ def main():
         decay_steps=100,
         decay_rate=0.05
     )
-
     ## Compile the model - so that
     model.compile(
         optimizer=tf.keras.optimizers.SGD(
@@ -97,22 +60,22 @@ def main():
            filepath=helper.static_name.get_timed_file_path("save_at_{epoch}.keras"),
            save_best_only=True
         ),
-        custemcallbacks.CustemCallbacks(val_subset.rebatch(1)),
+        custemcallbacks.CustemCallbacks(val_dataset.rebatch(1)),
     ]
 
     history = model.fit(
-        traning_subset,
+        traning_dataset,
         epochs=epochs,
         callbacks=callbacks,
-        validation_data=val_subset,
+        validation_data=val_dataset,
     )
 
     # Evaluate the model
     ## First make prediction on the dataset.
-    y_pred = model.predict(eval_subset)
+    y_pred = model.predict(eval_dataset)
     y_pred = np.argmax(y_pred, axis=1)
     ## Then extract to true labels
-    y_true = eval_subset.map(lambda x, y: y)
+    y_true = eval_dataset.map(lambda x, y: y)
     y_true = np.array(list(y_true.as_numpy_iterator()))
     y_true = np.transpose(y_true)
     y_true = np.squeeze(y_true)
