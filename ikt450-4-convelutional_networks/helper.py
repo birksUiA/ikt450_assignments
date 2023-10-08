@@ -211,6 +211,42 @@ def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True
         plt.show()
 
 
+def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, show=True):
+    """ """
+    # Set figure size
+    plt.figure(figsize=(10, 6))
+
+    for i, x in enumerate(xs):
+        plt.plot(
+            x,
+            label=legneds[i],
+            linewidth=i
+        )
+
+
+    # Setting title, labels
+    plt.title(title, fontsize=16)
+    plt.xlabel(ax_labels[0], fontsize=14)
+    plt.ylabel(ax_labels[1], fontsize=14)
+
+    # Displaying the grid
+    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+    # Adjusting legend
+    plt.legend(fontsize=12)
+
+    # Save the figure
+    if save:
+        filename= title.replace(" ", "_")
+        plt.savefig(
+            static_name.get_timed_file_path(filename),
+            dpi=static_name.dpi,
+            bbox_inches="tight",
+        )
+    # Show the figure
+    if show:
+        plt.show()
+
 def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=None):
     # cm = sklearn.metrics.confusion_matrix(y_true=y, y_pred=y_hat)
     fig, ax = plt.subplots(figsize=(6, 5), layout="constrained")

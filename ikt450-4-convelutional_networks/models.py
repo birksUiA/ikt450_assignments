@@ -58,10 +58,10 @@ def residual_cut_block(x, filters=32):
     return tf.keras.layers.add([x, residual])
 
 def make_pretranied_inception_net_model(input_shape, num_classes, name="pre_tranined_inception_net"):
-    base_model = tf.keras.applictions.InceptionResNetV2(
+    base_model = tf.keras.applications.InceptionResNetV2(
         weights="imagenet",
         include_top=False,
-        input_tesor=tf.keras.Input(input_shape)
+        input_tensor=tf.keras.Input(input_shape)
     )
 
     base_model.trainable = False

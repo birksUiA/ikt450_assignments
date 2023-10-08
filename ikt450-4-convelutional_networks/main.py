@@ -19,23 +19,27 @@ import io
 def main():
     # Set up helper
     image_size = (244, 244)
-    subset_procent = 0.1
+    subset_procent = 0.02
 
     traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(
         image_size, subset_procent
     )
 
-    helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
 
     # define the model
-    model = models.make_residual_model(
+    model = models.make_simple_convo_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
     print(model.name)
+    helper.static_name.model_name = model.name
+    helper.plot_model(model)
     model.summary()
 
+    helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
+
     metrics = [
+        "accuracy",
         tf.keras.metrics.CategoricalAccuracy(),
     ]
 
@@ -52,7 +56,7 @@ def main():
     )
 
     # Fit the model
-    epochs=10
+    epochs=3
     # Define Callback functions
 
     callback_list = [
@@ -86,13 +90,31 @@ def main():
         show=False,
     )
 
-    helper.plot_accuracies(
-        accuracies=history.history["categorical_accuracy"],
-        accuracies_validation=history.history["val_categorical_accuracy"],
+    helper.plot_multiple_lines(
+        xs=[history.history["accuracy"], history.history["val_accuracy"]],
+        legneds=["accuracy", "val_accuracy"],
+        title="Accuracy vs validation accuracy",
+        ax_labels=("Epochs", "Acc"),
         save=True,
         show=False,
     )
-
+    
+    helper.plot_multiple_lines(
+        xs=[history.history["categorical_accuracy"], history.history["val_categorical_accuracy"]],
+        legneds=["accuracy", "val_accuracy"],
+        title="Categorial Accuracy vs Validation Categorial Accuracy",
+        ax_labels=("Epochs", "Acc"),
+        save=True,
+        show=False,
+    )
+    helper.plot_multiple_lines(
+        xs=[history.history["val_cal_accurracy"]],
+        legneds=["accuracy"],
+        title="My calculated Accuraccy",
+        ax_labels=("Epochs", "Acc"),
+        save=True,
+        show=False,
+    )
     helper.plot_confustion_matrix(y=y_true, y_hat=y_pred, save=True, show=False)
 
 

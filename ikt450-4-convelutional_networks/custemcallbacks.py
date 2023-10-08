@@ -6,7 +6,6 @@ import helper
 class ConfusionMatrixCallback(tf.keras.callbacks.Callback):
     def __init__(self, test_data):
         self.test_dataset = test_data
-        self.best_loss = float('inf')
 
     def on_epoch_end(self, epoch, log=None):
         # Evaluate the model
@@ -29,6 +28,7 @@ class ConfusionMatrixCallback(tf.keras.callbacks.Callback):
         )
         accraccy = np.sum(np.equal(y_true, y_pred)) / len(y_pred)
         log["val_cal_accurracy"] = accraccy
+        print(f"{log}")
             
 class SaveBestModel(tf.keras.callbacks.Callback):
 
