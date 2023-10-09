@@ -211,6 +211,7 @@ def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True
         plt.show()
 
 
+colors = ["green", "blue", "red", "orange"]
 def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, show=True):
     """ """
     # Set figure size
@@ -220,7 +221,7 @@ def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, sho
         plt.plot(
             x,
             label=legneds[i],
-            linewidth=i
+            linewidth=0.15
         )
 
 
@@ -281,6 +282,7 @@ def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=
         plt.show()
 
 def main():
+
     model_name = "test"
     static_name("test_model")
 

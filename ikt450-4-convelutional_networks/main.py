@@ -19,7 +19,7 @@ import io
 def main():
     # Set up helper
     image_size = (244, 244)
-    subset_procent = 0.02
+    subset_procent = 0.2
 
     traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(
         image_size, subset_procent
@@ -27,7 +27,7 @@ def main():
 
 
     # define the model
-    model = models.make_simple_convo_model(
+    model = models.make_pretranied_inception_net_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -56,7 +56,7 @@ def main():
     )
 
     # Fit the model
-    epochs=3
+    epochs=100
     # Define Callback functions
 
     callback_list = [
@@ -83,6 +83,7 @@ def main():
 
     # Calculate Accuaracy
 
+    import ipdb; ipdb.set_trace();
     helper.plot_losses_during_training(
         train_losses=history.history["loss"],
         val_losses=history.history["val_loss"],
