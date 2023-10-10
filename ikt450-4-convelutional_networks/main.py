@@ -17,7 +17,9 @@ import custemcallbacks
 import io
 
 def main():
-    # Set up helper
+    # Set up
+    print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
+    print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
     image_size = (244, 244)
     subset_procent = 0.2
 
@@ -40,7 +42,6 @@ def main():
 
     metrics = [
         "accuracy",
-        tf.keras.metrics.CategoricalAccuracy(),
     ]
 
     initial_learning_rate = 0.1
@@ -50,7 +51,7 @@ def main():
     )
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.RMSprop(learning_rate=lr_schedule, momentum=0.9),
+        optimizer=tf.keras.optimizers.Adam(),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=metrics,
     )
@@ -83,7 +84,6 @@ def main():
 
     # Calculate Accuaracy
 
-    import ipdb; ipdb.set_trace();
     helper.plot_losses_during_training(
         train_losses=history.history["loss"],
         val_losses=history.history["val_loss"],
@@ -100,14 +100,6 @@ def main():
         show=False,
     )
     
-    helper.plot_multiple_lines(
-        xs=[history.history["categorical_accuracy"], history.history["val_categorical_accuracy"]],
-        legneds=["accuracy", "val_accuracy"],
-        title="Categorial Accuracy vs Validation Categorial Accuracy",
-        ax_labels=("Epochs", "Acc"),
-        save=True,
-        show=False,
-    )
     helper.plot_multiple_lines(
         xs=[history.history["val_cal_accurracy"]],
         legneds=["accuracy"],
