@@ -36,7 +36,7 @@ def main():
     helper.plot_model(model)
     model.summary()
 
-    helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
+    helper.plot_images_from_set(dataset=traning_dataset, show=True, save=True)
 
     metrics = [
         "accuracy",
@@ -50,7 +50,7 @@ def main():
     )
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.RMSprop(learning_rate=lr_schedule, momentum=0.9),
+        optimizer=tf.keras.optimizers.Adam(),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=metrics,
     )
