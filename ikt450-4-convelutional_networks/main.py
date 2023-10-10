@@ -29,7 +29,7 @@ def main():
 
 
     # define the model
-    model = models.make_pretranied_inception_net_model(
+    model = models.make_residual_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -100,14 +100,6 @@ def main():
         show=False,
     )
     
-    helper.plot_multiple_lines(
-        xs=[history.history["val_cal_accurracy"]],
-        legneds=["accuracy"],
-        title="My calculated Accuraccy",
-        ax_labels=("Epochs", "Acc"),
-        save=True,
-        show=False,
-    )
     helper.plot_confustion_matrix(y=y_true, y_hat=y_pred, save=True, show=False)
 
 
