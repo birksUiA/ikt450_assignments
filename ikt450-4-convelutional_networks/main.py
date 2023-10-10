@@ -17,7 +17,9 @@ import custemcallbacks
 import io
 
 def main():
-    # Set up helper
+    # Set up
+    print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
+    print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
     image_size = (244, 244)
     subset_procent = 0.2
 
@@ -27,7 +29,7 @@ def main():
 
 
     # define the model
-    model = models.make_pretranied_inception_net_model(
+    model = models.make_residual_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -36,11 +38,10 @@ def main():
     helper.plot_model(model)
     model.summary()
 
-    helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
+    helper.plot_images_from_set(dataset=traning_dataset, show=True, save=True)
 
     metrics = [
         "accuracy",
-        tf.keras.metrics.CategoricalAccuracy(),
     ]
 
     initial_learning_rate = 0.1
@@ -50,7 +51,7 @@ def main():
     )
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.RMSprop(learning_rate=lr_schedule, momentum=0.9),
+        optimizer=tf.keras.optimizers.Adam(),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=metrics,
     )
@@ -83,7 +84,6 @@ def main():
 
     # Calculate Accuaracy
 
-    import ipdb; ipdb.set_trace();
     helper.plot_losses_during_training(
         train_losses=history.history["loss"],
         val_losses=history.history["val_loss"],
@@ -100,22 +100,6 @@ def main():
         show=False,
     )
     
-    helper.plot_multiple_lines(
-        xs=[history.history["categorical_accuracy"], history.history["val_categorical_accuracy"]],
-        legneds=["accuracy", "val_accuracy"],
-        title="Categorial Accuracy vs Validation Categorial Accuracy",
-        ax_labels=("Epochs", "Acc"),
-        save=True,
-        show=False,
-    )
-    helper.plot_multiple_lines(
-        xs=[history.history["val_cal_accurracy"]],
-        legneds=["accuracy"],
-        title="My calculated Accuraccy",
-        ax_labels=("Epochs", "Acc"),
-        save=True,
-        show=False,
-    )
     helper.plot_confustion_matrix(y=y_true, y_hat=y_pred, save=True, show=False)
 
 
