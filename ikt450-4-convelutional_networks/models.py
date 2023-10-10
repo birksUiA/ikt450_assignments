@@ -1,13 +1,12 @@
 import tensorflow as tf
 
 
-def dense_block(x, units, activation=None):
-    if activation is None:
+def dense_block(x, units, activation="ReLU", output=False):
+    if output is True:
         if units == 1:
             activation="sigmoid"
         else:
             activation="softmax"
-
     x = tf.keras.layers.Dense(units=units)(x)
     return tf.keras.layers.Activation(activation)(x)
         
@@ -72,7 +71,7 @@ def make_pretranied_inception_net_model(input_shape, num_classes, name="pre_tran
     x = tf.keras.layers.Dropout(0.2)(x)
     x = dense_block(x, 128)
     x = tf.keras.layers.Dropout(0.2)(x)
-    outputs = dense_block(x, num_classes)
+    outputs = dense_block(x, num_classes, output=True)
 
     return tf.keras.Model(inputs=base_model.input, outputs=outputs, name=name)
 
@@ -98,7 +97,7 @@ def make_residual_model(input_shape, num_classes, name="residual_model"):
     x = tf.keras.layers.Dropout(0.2)(x)
     x = dense_block(x, 1000)
     x = tf.keras.layers.Dropout(0.2)(x)
-    outputs = dense_block(x, num_classes)
+    outputs = dense_block(x, num_classes, output=True)
 
     
     return tf.keras.Model(inputs, outputs, name=name)
@@ -112,7 +111,7 @@ def make_simple_residual_model(input_shape, num_classes, name="simple_residual_m
     x = residual_block(x, 32)
     x = residual_cut_block(x, 64)
     x = tf.keras.layers.GlobalAvgPool2D()(x)
-    outputs = dense_block(x, num_classes)
+    outputs = dense_block(x, num_classes, output=True)
     
     return tf.keras.Model(inputs, outputs, name=name)
 
@@ -131,7 +130,7 @@ def make_simple_convo_model(input_shape, num_classes, name="simple_convo_model")
     x = tf.keras.layers.Activation("ReLU")(x)
 
     x = dense_block(x, 1024) 
-    outputs = dense_block(x, num_classes)
+    outputs = dense_block(x, num_classes, output=True)
 
     return tf.keras.Model(inputs, outputs, name=name)
 
@@ -167,10 +166,10 @@ def make_vgg_like_convo_model(input_shape, num_classes, name="vgg_like_model"):
     x = tf.keras.layers.GlobalAvgPool2D()(x)
 
 
-    x = dense_block(x, 4096, activation="ReLU") 
-    x = dense_block(x, 4096, activation="ReLU") 
-    x = dense_block(x, 1000, activation="ReLU") 
-    outputs = dense_block(x, num_classes)
+    x = dense_block(x, 4096) 
+    x = dense_block(x, 4096) 
+    x = dense_block(x, 1000) 
+    outputs = dense_block(x, num_classes, output=True)
 
     return tf.keras.Model(inputs, outputs, name=name)
     
@@ -188,11 +187,11 @@ def make_simple_residual(input_shape, num_classes):
     ## Dense Layers
     x = tf.keras.layers.GlobalAvgPool2D()(x)
 
-    x = dense_block(x, 4096, activation="ReLU") 
+    x = dense_block(x, 4096) 
 
-    x = dense_block(x, 4096, activation="ReLU") 
-    x = dense_block(x, 1000, activation="ReLU") 
-    outputs = dense_block(x, num_classes)
+    x = dense_block(x, 4096) 
+    x = dense_block(x, 1000) 
+    outputs = dense_block(x, num_classes, output=True)
 
     return tf.keras.Model(inputs, outputs)
     

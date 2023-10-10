@@ -38,7 +38,7 @@ def main():
     helper.plot_model(model)
     model.summary()
 
-    helper.plot_images_from_set(dataset=traning_dataset, show=False, save=False)
+    helper.plot_images_from_set(dataset=traning_dataset, show=True, save=True)
 
     metrics = [
         "accuracy",
