@@ -45,11 +45,11 @@ def main():
         "accuracy",
     ]
 
-    initial_learning_rate = 0.1
+    initial_learning_rate = 0.01
 
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=initial_learning_rate),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=metrics,
     )
@@ -62,6 +62,9 @@ def main():
             factor=0.1,
             patience=10, 
             verbose=True
+        ),
+        tf.keras.callbacks.EarlyStopping(
+            patience=20
         ),
         custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
         custemcallbacks.SaveBestModel(),
@@ -99,6 +102,14 @@ def main():
         legneds=["accuracy", "val_accuracy"],
         title="Accuracy vs validation accuracy",
         ax_labels=("Epochs", "Acc"),
+        save=True,
+        show=False,
+    )
+    helper.plot_multiple_lines(
+        xs=[history.history["lr"]],
+        legneds=["Learning Rate"],
+        title="Learning rate progression",
+        ax_labels=("Epochs", "lr"),
         save=True,
         show=False,
     )

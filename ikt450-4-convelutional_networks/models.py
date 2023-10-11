@@ -131,11 +131,11 @@ def make_simple_convo_model(input_shape, num_classes, name="simple_convo_model")
     inputs = tf.keras.Input(shape=input_shape)
 
     x = convelutional_block(inputs, 32)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
     x = convelutional_block(x, 64)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
     x = convelutional_block(x, 128)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
 
     x = tf.keras.layers.Flatten()(x)
 
