@@ -20,6 +20,7 @@ def main():
     # Set up
     print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
     print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
+    epochs=100
     image_size = (244, 244)
     subset_procent = 0.2
 
@@ -46,9 +47,6 @@ def main():
 
     initial_learning_rate = 0.1
 
-    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate, decay_steps=100, decay_rate=0.05
-    )
     ## Compile the model - so that
     model.compile(
         optimizer=tf.keras.optimizers.Adam(),
@@ -57,10 +55,14 @@ def main():
     )
 
     # Fit the model
-    epochs=100
     # Define Callback functions
 
     callback_list = [
+        tf.keras.callbacks.ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.1,
+            patience=10
+        ),
         custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
         custemcallbacks.SaveBestModel(),
     ]
