@@ -31,14 +31,14 @@ def load_food_data(image_size=(244, 244), subset_procent=None):
 
     return traning_dataset, val_dataset, eval_dataset
 
-def load_data(path, image_size, batch_size=32, subset_procent=None):
+def load_data(path, image_size, batch_size=16, subset_procent=None):
     dataset = tf.keras.utils.image_dataset_from_directory(
         directory=path,
         shuffle=True,
         image_size=image_size,
         labels="inferred",
         label_mode="int",
-        batch_size=8,
+        batch_size=batch_size,
     )
 
     if subset_procent is None:
