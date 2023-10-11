@@ -2,8 +2,8 @@
 
 # Remote server information
 remote_user="ubuntu"
-remote_host="10.225.151.17"
-remote_path="/home/ubuntu/birks_project/ikt450_assignments/ikt450-4-convelutional_networks/output/"
+remote_host="robins_server"
+remote_path="/home/ubuntu/birks/ikt450_assignments/ikt450-4-convelutional_networks/output/"
 
 # Local destination directory
 local_destination="./latests/"
