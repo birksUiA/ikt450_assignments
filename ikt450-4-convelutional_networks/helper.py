@@ -221,7 +221,7 @@ def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, sho
         plt.plot(
             x,
             label=legneds[i],
-            linewidth=0.15
+            linewidth=0.3
         )
 
 

@@ -21,7 +21,7 @@ def main():
     print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
     print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
     image_size = (244, 244)
-    subset_procent = 0.2
+    subset_procent = 0.5
 
     traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(
         image_size, subset_procent
@@ -29,7 +29,7 @@ def main():
 
 
     # define the model
-    model = models.make_residual_model(
+    model = models.make_vgg_like_convo_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -57,7 +57,7 @@ def main():
     )
 
     # Fit the model
-    epochs=100
+    epochs=300
     # Define Callback functions
 
     callback_list = [
