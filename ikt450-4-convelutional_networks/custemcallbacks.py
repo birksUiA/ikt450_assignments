@@ -48,12 +48,12 @@ class SaveBestModel(tf.keras.callbacks.Callback):
             )
             print(f"model saved at epoch {epoch}")
 
-class LogMetricsToCSV(tf.keras.callback.Callback):
+class LogMetricsToCSV(tf.keras.callbacks.Callback):
     def __init__(self):
         self.path = helper.get_timed_file_path(file_name="metrics.csv")
         with open(self.path, "wt") as f:
             f.write("loss,val_loss,accuracy,vel_accuracy\n")
 
     def on_epoch_end(self, epoch, log=None):
-        with open(self.path, "wt" as f:
+        with open(self.path, "wt") as f:
             f.write(f"{log['loss']},{log['val_loss']},{log['accuracy']},{log['val_accuracy']}\n")

@@ -20,7 +20,7 @@ def main():
     # Set up
     print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
     print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
-    epochs=100
+    epochs=10
     image_size = (244, 244)
     subset_procent = 0.2
 
@@ -30,7 +30,7 @@ def main():
 
 
     # define the model
-    model = models.make_residual_model(
+    model = models.make_simple_convo_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -61,10 +61,12 @@ def main():
         tf.keras.callbacks.ReduceLROnPlateau(
             monitor="val_loss",
             factor=0.1,
-            patience=10
+            patience=10, 
+            verbose=True
         ),
         custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
         custemcallbacks.SaveBestModel(),
+        custemcallbacks.LogMetricsToCSV(),
     ]
 
     history = model.fit(

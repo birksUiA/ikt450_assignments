@@ -38,7 +38,7 @@ def load_data(path, image_size, batch_size=32, subset_procent=None):
         image_size=image_size,
         labels="inferred",
         label_mode="int",
-        batch_size=32,
+        batch_size=8,
     )
 
     if subset_procent is None:
@@ -80,11 +80,11 @@ def main():
     
     
     print(f"Traning data class distribution: {[(k, v.numpy()) for k, v in counts_train.items()]}")
-    print(f"total traning images: {reduce(add, [v.numpy() for k, v in counts_train.items()]}")
+    print(f"total traning images: {reduce(add, [v.numpy() for k, v in counts_train.items()])})")
     print(f"validat data class distribution: {[(k, v.numpy()) for k, v in counts_val.items()]}")
-    print(f"total traning images: {reduce(add, [v.numpy() for k, v in counts_train.items()]}")
+    print(f"total traning images: {reduce(add, [v.numpy() for k, v in counts_train.items()])}")
     print(f"evaluat data class distribution: {[(k, v.numpy()) for k, v in counts_eval.items()]}")
-    print(f"total traning images: {reduce(add, [v.numpy() for k, v in counts_train.items()]}")
+    print(f"total traning images: {reduce(add, [v.numpy() for k, v in counts_train.items()])}")
 
 
 
