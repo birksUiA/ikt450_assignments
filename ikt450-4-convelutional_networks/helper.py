@@ -125,6 +125,7 @@ def plot_model(model, show_shapes=True):
     tf.keras.utils.plot_model(
         model=model,
         show_shapes=True,
+        show_dtype=True,
         to_file=static_name.get_timed_file_path("model_plot") + ".png",
     )
 
