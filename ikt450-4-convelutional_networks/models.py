@@ -80,10 +80,6 @@ def make_residual_model(input_shape, num_classes, name="residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
 
     x = tf.keras.layers.Rescaling(scale=1./input_shape[0])(inputs) 
-     
-    x = tf.keras.layers.RandomFlip()(x)
-    x = tf.keras.layers.RandomZoom(height_factor=(-0.1, 0.1))(x)
-    x = tf.keras.layers.RandomRotation(factor=(-0.15, 0.15))(x)
 
     x = convelutional_block(x, filters=16, kernel_size=(7, 7))
     
@@ -113,7 +109,6 @@ def make_residual_model(input_shape, num_classes, name="residual_model"):
     
     return tf.keras.Model(inputs, outputs, name=name)
 
-    # Data Augmentation
     
 def make_simple_residual_model(input_shape, num_classes, name="simple_residual_model"):
     inputs = tf.keras.Input(shape=input_shape)

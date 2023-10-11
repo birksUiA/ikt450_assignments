@@ -17,12 +17,11 @@ import custemcallbacks
 import io
 
 def main():
-    # Set up
     print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
     print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
     epochs=300
     image_size = (244, 244)
-    subset_procent = 0.5
+    subset_procent = 0.4
 
     traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(
         image_size, subset_procent
