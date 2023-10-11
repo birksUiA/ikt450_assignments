@@ -138,7 +138,6 @@ def make_simple_convo_model(input_shape, num_classes, name="simple_convo_model")
     x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
 
     x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Activation("ReLU")(x)
 
     x = dense_block(x, 1024) 
     outputs = dense_block(x, num_classes, output=True)

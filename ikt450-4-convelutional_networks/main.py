@@ -20,6 +20,7 @@ def main():
     # Set up
     print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
     print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
+    epochs=300
     image_size = (244, 244)
     subset_procent = 0.5
 
@@ -29,7 +30,7 @@ def main():
 
 
     # define the model
-    model = models.make_vgg_like_convo_model(
+    model = models.make_residual_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -46,9 +47,6 @@ def main():
 
     initial_learning_rate = 0.1
 
-    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate, decay_steps=100, decay_rate=0.05
-    )
     ## Compile the model - so that
     model.compile(
         optimizer=tf.keras.optimizers.Adam(),
@@ -56,13 +54,18 @@ def main():
         metrics=metrics,
     )
 
-    # Fit the model
-    epochs=300
     # Define Callback functions
 
     callback_list = [
+        tf.keras.callbacks.ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.1,
+            patience=10, 
+            verbose=True
+        ),
         custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
         custemcallbacks.SaveBestModel(),
+        custemcallbacks.LogMetricsToCSV(),
     ]
 
     history = model.fit(

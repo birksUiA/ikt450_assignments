@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import os
 import tensorflow as tf
-
+line_width = 1.2
 classes = [
     "Bread",
     "Dairy product",
@@ -108,7 +108,7 @@ def plot_images_from_set(
     for images, labels in dataset.take(1):
         for i in range(number_of_images):
             ax = plt.subplot(image_grid[0], image_grid[1], i + 1)
-            plt.imshow(images[i].numpy().astype("uint8"))
+            plt.imshow(images[i].numpy())
             plt.title(classes_dict[int(labels[i])])
             plt.axis("off")
 
@@ -125,6 +125,7 @@ def plot_model(model, show_shapes=True):
     tf.keras.utils.plot_model(
         model=model,
         show_shapes=True,
+        show_dtype=True,
         to_file=static_name.get_timed_file_path("model_plot") + ".png",
     )
 
@@ -144,10 +145,10 @@ def plot_losses_during_training(train_losses, val_losses, save=True, show=True):
     plt.figure(figsize=(10, 6))
 
     # Plot training loss
-    plt.plot(train_losses, label="Training Loss", linewidth=2, color="blue")
+    plt.plot(train_losses, label="Training Loss", linewidth=line_width, color="blue")
 
     # Plot validation loss
-    plt.plot(val_losses, label="Validation Loss", linewidth=2, color="red")
+    plt.plot(val_losses, label="Validation Loss", linewidth=line_width, color="red")
 
     # Setting title, labels
     plt.title("Training and Validation Losses", fontsize=16)
@@ -178,7 +179,7 @@ def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True
     plt.figure(figsize=(10, 6))
 
     # Plot training loss
-    plt.plot(accuracies, label="accuracies", linewidth=2, color="blue")
+    plt.plot(accuracies, label="accuracies", linewidth=line_width, color="blue")
 
     if accuracies_validation is not None:
         plt.plot(
@@ -194,7 +195,7 @@ def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True
     plt.ylabel("Accuracies", fontsize=14)
 
     # Displaying the grid
-    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+    plt.grid(True, which="both", linestyle="--", linewidth=line_width)
 
     # Adjusting legend
     plt.legend(fontsize=12)
@@ -221,7 +222,7 @@ def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, sho
         plt.plot(
             x,
             label=legneds[i],
-            linewidth=0.3
+            linewidth=line_width
         )
 
 
@@ -231,7 +232,7 @@ def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, sho
     plt.ylabel(ax_labels[1], fontsize=14)
 
     # Displaying the grid
-    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+    plt.grid(True, which="both", linestyle="--", linewidth=line_width)
 
     # Adjusting legend
     plt.legend(fontsize=12)
