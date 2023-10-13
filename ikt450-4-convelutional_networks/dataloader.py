@@ -10,11 +10,16 @@ data_augmentation = tf.keras.Sequential([
 ])
 AUTOTUNE = tf.data.AUTOTUNE
 
-def prepare_data(dataset, batch_size=16, augment=False):
+def prepare_data(dataset, batch_size=16, image_size=(244, 244), augment=False):
 
     dataset = dataset.shuffle(1000)
     dataset = dataset.batch(
         batch_size, 
+        num_parallel_calls=AUTOTUNE
+    )
+
+    dataset = dataset.map(
+        lambda x, y: (tf.keras.layers.Rescaling(1./image_size[0])(x), y), 
         num_parallel_calls=AUTOTUNE
     )
 
@@ -42,6 +47,7 @@ def load_food_data(image_size=(244, 244), subset_procent=None):
     )
     traning_dataset = prepare_data(
         traning_dataset,
+        image_size=image_size,
         augment=True
     )
     val_dataset = load_data(

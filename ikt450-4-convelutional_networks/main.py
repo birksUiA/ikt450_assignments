@@ -48,7 +48,7 @@ def main():
 
     ## Compile the model - so that
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=initial_learning_rate),
+        optimizer=tf.keras.optimizers.Adam(),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
         metrics=metrics,
     )
@@ -56,14 +56,14 @@ def main():
     # Define Callback functions
 
     callback_list = [
-        tf.keras.callbacks.ReduceLROnPlateau(
-            monitor="val_loss",
-            factor=0.1,
-            patience=10, 
-            verbose=True
-        ),
+#        tf.keras.callbacks.ReduceLROnPlateau(
+#            monitor="val_loss",
+#            factor=0.1,
+#            patience=10, 
+#            verbose=True
+#        ),
         tf.keras.callbacks.EarlyStopping(
-            patience=20
+            patience=50
         ),
         custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
         custemcallbacks.SaveBestModel(),
@@ -104,14 +104,14 @@ def main():
         save=True,
         show=False,
     )
-    helper.plot_multiple_lines(
-        xs=[history.history["lr"]],
-        legneds=["Learning Rate"],
-        title="Learning rate progression",
-        ax_labels=("Epochs", "lr"),
-        save=True,
-        show=False,
-    )
+#     helper.plot_multiple_lines(
+#         xs=[history.history["lr"]],
+#         legneds=["Learning Rate"],
+#         title="Learning rate progression",
+#         ax_labels=("Epochs", "lr"),
+#         save=True,
+#         show=False,
+#     )
     
     helper.plot_confustion_matrix(y=y_true, y_hat=y_pred, save=True, show=False)
 

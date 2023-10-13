@@ -79,9 +79,8 @@ def make_pretranied_inception_net_model(input_shape, num_classes, name="pre_tran
 def make_residual_model(input_shape, num_classes, name="residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
 
-    x = tf.keras.layers.Rescaling(scale=1./input_shape[0])(inputs) 
 
-    x = convelutional_block(x, filters=16, kernel_size=(7, 7))
+    x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
     
     x = residual_block(x, 64)
     x = residual_block(x, 64)
