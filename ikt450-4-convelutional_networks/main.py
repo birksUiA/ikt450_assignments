@@ -17,12 +17,11 @@ import custemcallbacks
 import io
 
 def main():
-    # Set up
     print(f"\n\nGpu availible: {tf.test.is_gpu_available()}\n\n")
     print(f"\n\nGpu device name: {tf.test.gpu_device_name()}\n\n")
-    epochs=10
+    epochs=300
     image_size = (244, 244)
-    subset_procent = 0.2
+    subset_procent = 0.4
 
     traning_dataset, val_dataset, eval_dataset = dataloader.load_food_data(
         image_size, subset_procent
@@ -30,7 +29,7 @@ def main():
 
 
     # define the model
-    model = models.make_simple_convo_model(
+    model = models.make_residual_model(
         input_shape=image_size + (3,), num_classes=11
     )
     # Report on the defined model
@@ -45,7 +44,7 @@ def main():
         "accuracy",
     ]
 
-    initial_learning_rate = 0.1
+    initial_learning_rate = 0.01
 
     ## Compile the model - so that
     model.compile(
@@ -54,15 +53,17 @@ def main():
         metrics=metrics,
     )
 
-    # Fit the model
     # Define Callback functions
 
     callback_list = [
-        tf.keras.callbacks.ReduceLROnPlateau(
-            monitor="val_loss",
-            factor=0.1,
-            patience=10, 
-            verbose=True
+#        tf.keras.callbacks.ReduceLROnPlateau(
+#            monitor="val_loss",
+#            factor=0.1,
+#            patience=10, 
+#            verbose=True
+#        ),
+        tf.keras.callbacks.EarlyStopping(
+            patience=50
         ),
         custemcallbacks.ConfusionMatrixCallback(val_dataset.rebatch(1)),
         custemcallbacks.SaveBestModel(),
@@ -103,6 +104,14 @@ def main():
         save=True,
         show=False,
     )
+#     helper.plot_multiple_lines(
+#         xs=[history.history["lr"]],
+#         legneds=["Learning Rate"],
+#         title="Learning rate progression",
+#         ax_labels=("Epochs", "lr"),
+#         save=True,
+#         show=False,
+#     )
     
     helper.plot_confustion_matrix(y=y_true, y_hat=y_pred, save=True, show=False)
 

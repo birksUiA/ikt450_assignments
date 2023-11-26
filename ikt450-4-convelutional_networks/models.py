@@ -78,14 +78,19 @@ def make_pretranied_inception_net_model(input_shape, num_classes, name="pre_tran
 
 def make_residual_model(input_shape, num_classes, name="residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
+
+
     x = convelutional_block(inputs, filters=16, kernel_size=(7, 7))
     
+    x = residual_block(x, 64)
     x = residual_block(x, 64)
     x = residual_block(x, 64)
     x = residual_cut_block(x, 128)
     x = residual_block(x, 128)
     x = residual_block(x, 128)
+    x = residual_block(x, 128)
     x = residual_cut_block(x, 256)
+    x = residual_block(x, 256)
     x = residual_block(x, 256)
     x = residual_block(x, 256)
     x = residual_cut_block(x, 512)
@@ -97,12 +102,12 @@ def make_residual_model(input_shape, num_classes, name="residual_model"):
     x = tf.keras.layers.Dropout(0.2)(x)
     x = dense_block(x, 1000)
     x = tf.keras.layers.Dropout(0.2)(x)
+
     outputs = dense_block(x, num_classes, output=True)
 
     
     return tf.keras.Model(inputs, outputs, name=name)
 
-    # Data Augmentation
     
 def make_simple_residual_model(input_shape, num_classes, name="simple_residual_model"):
     inputs = tf.keras.Input(shape=input_shape)
@@ -120,14 +125,13 @@ def make_simple_convo_model(input_shape, num_classes, name="simple_convo_model")
     inputs = tf.keras.Input(shape=input_shape)
 
     x = convelutional_block(inputs, 32)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
     x = convelutional_block(x, 64)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
     x = convelutional_block(x, 128)
-    x = tf.keras.layers.MaxPooling2D(2, strides=1)(x)
+    x = tf.keras.layers.MaxPooling2D(2, strides=2)(x)
 
     x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Activation("ReLU")(x)
 
     x = dense_block(x, 1024) 
     outputs = dense_block(x, num_classes, output=True)
@@ -139,7 +143,12 @@ def make_vgg_like_convo_model(input_shape, num_classes, name="vgg_like_model"):
     inputs = tf.keras.Input(shape=input_shape)
 
     # Data augmentation 
-    x = tf.keras.layers.Rescaling(1/input_shape[0])(inputs)
+    x = tf.keras.layers.Rescaling(scale=1./input_shape[0])(inputs) 
+     
+    x = tf.keras.layers.RandomFlip()(x)
+    x = tf.keras.layers.RandomZoom(height_factor=(-0.1, 0.1))(x)
+    x = tf.keras.layers.RandomRotation(factor=(-0.15, 0.15))(x)
+
     
     ## Convelutional layers
 
@@ -167,8 +176,11 @@ def make_vgg_like_convo_model(input_shape, num_classes, name="vgg_like_model"):
 
 
     x = dense_block(x, 4096) 
+    x = tf.keras.layers.Dropout(0.2)(x)
     x = dense_block(x, 4096) 
+    x = tf.keras.layers.Dropout(0.2)(x)
     x = dense_block(x, 1000) 
+    x = tf.keras.layers.Dropout(0.2)(x)
     outputs = dense_block(x, num_classes, output=True)
 
     return tf.keras.Model(inputs, outputs, name=name)
