@@ -1,0 +1,6 @@
+[submodule "ikt450-1-knn"]
+	path = ikt450-1-knn
+	url = ./ikt450-1-knn
+[submodule "ikt450-2-multilayer-perceptron"]
+	path = ikt450-2-multilayer-perceptron
+	url = ./ikt450-2-multilayer-perceptron
