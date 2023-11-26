@@ -1,0 +1,5 @@
+*.zip
+ecg
+.png
+__pycache__/
+*.png
