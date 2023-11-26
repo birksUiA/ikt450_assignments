@@ -1,0 +1,12 @@
+__pycache__/
+venv/
+.DS_store
+tags
+data_true
+food-11/
+data/
+cifar10/
+*.png
+*.zip
+saved_models/
+.ipynb_checkpoints/
