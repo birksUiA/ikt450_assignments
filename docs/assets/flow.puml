@@ -1,0 +1,16 @@
+@startuml
+
+skinparam dpi 300
+
+start
+-> (7727 B) puzzle.txt;
+:Python encoder;
+-> (2768 B) puzzle.in.bin;
+:Scala solver;
+-> (5212 B) puzzle.out.bin;
+:Python decoder;
+-> (10878 B) puzzle_solution.txt;
+
+stop
+
+@enduml
