@@ -20,19 +20,19 @@ def main():
         path_x=dataloader.paths_real["training"][0],
         path_y=dataloader.paths_real["training"][1],
         image_size=image_size,
-        subset_procent=0.2,
+        subset_procent=0.05,
     )
     data_validation = dataloader.load_data_pair_no_label(
         path_x=dataloader.paths_real["validation"][0],
         path_y=dataloader.paths_real["validation"][1],
         image_size=image_size,
-        subset_procent=0.2,
+        subset_procent=0.05,
     )
     data_evaluation = dataloader.load_data_pair_no_label(
         path_x=dataloader.paths_real["evaluation"][0],
         path_y=dataloader.paths_real["evaluation"][1],
         image_size=image_size,
-        subset_procent=0.2,
+        subset_procent=0.05,
     )
     # print lengths of datasets
 
@@ -78,7 +78,7 @@ def main():
     x = keras.layers.UpSampling2D((2, 2))(x)
     decoded = keras.layers.Conv2D(3, (3, 3), activation="sigmoid", padding="same")(x)
 
-    autoencoder = keras.Model(input_img, decoded)
+    autoencoder:keras.Model = keras.Model(input_img, decoded)
 
     autoencoder.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
     autoencoder.summary()
@@ -90,13 +90,65 @@ def main():
     # fit the model
     history = autoencoder.fit(
         data_training,
-        epochs=10,
+        epochs=1,
         batch_size=8,
         shuffle=True,
         validation_data=data_validation,
         callbacks=callback_list,
     )
-    autoencoder.save("final_model") 
+    final_model_dir = helper.static_name.get_timed_file_path(
+            sub_dir="saved_model", file_name=f"final_model"
+        )
+    autoencoder.save(
+        final_model_dir
+    )
+    # plot the history
+    # plot loss
+    helper.plot_multiple_lines(xs=[history.history["loss"], history.history["val_loss"]], 
+                               legneds=["loss", "val_loss"], 
+                               title="Loss",
+                               ax_labels=("Epochs", "Loss"),
+                               save=True,
+                               show=False)
+    # plot accuracy
+    helper.plot_multiple_lines(xs=[history.history["accuracy"], history.history["val_accuracy"]],
+                               legneds=["accuracy", "val_accuracy"],
+                               title="Accuracy",
+                               ax_labels=("Epochs", "Accuracy"),
+                               save=True,
+                               show=False)
+    
+
+
+
+    # evaluate the model
+    data_evaluation = data_evaluation.batch(1)
+    evalutaion_history = autoencoder.evaluate(data_evaluation)
+    print(evalutaion_history)
+    
+    # plot some images
+    image: tf.data.Dataset = data_evaluation.take(3)
+    # subfigure
+    rows = 3
+    cols = 3
+    fig, axs = plt.subplots(rows, cols, figsize=(10, 10))
+    for i, (image_x, image_y) in enumerate(image):
+        image_x = np.array(image_x)
+        image_y = np.array(image_y)
+        image_x = image_x.reshape(image_size + (3,))
+        image_y = image_y.reshape(image_size + (3,))
+        image_y_pred = autoencoder.predict(image_x.reshape(1, *image_x.shape))
+        image_y_pred = image_y_pred.reshape(image_size + (3,))
+        axs[0, i].imshow(image_x)
+        axs[1, i].imshow(image_y)
+        axs[2, i].imshow(image_y_pred)
+
+    plt.savefig(helper.static_name.get_timed_file_path(
+             file_name=f"images"
+        ))
+    plt.show()
+    plt.close()
+
 
 if __name__ == "__main__":
     main()

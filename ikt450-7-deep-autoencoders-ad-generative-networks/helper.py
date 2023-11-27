@@ -105,10 +105,10 @@ def plot_images_from_set(
     show: bool = True,
 ):
     plt.figure(figsize=figsize)
-    
+
     for images, labels in dataset.take(1):
         for i in range(number_of_images):
-            ax = plt.subplot(image_grid[0], image_grid[1], i + 1)
+            plt.subplot(image_grid[0], image_grid[1], i + 1)
             plt.imshow(images[i].numpy())
             plt.title(classes_dict[int(labels[i])])
             plt.axis("off")
@@ -173,6 +173,7 @@ def plot_losses_during_training(train_losses, val_losses, save=True, show=True):
 
     if show:
         plt.show()
+    plt.close()
 
 
 def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True):
@@ -212,13 +213,31 @@ def plot_accuracies(accuracies, accuracies_validation=None, save=True, show=True
     # Show the figure
     if show:
         plt.show()
+    plt.close()
 
 
 colors = ["green", "blue", "red", "orange"]
 
 
-def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, show=True):
-    """ """
+def plot_multiple_lines(
+    xs: list,
+    legneds: list[str],
+    title: str,
+    ax_labels: tuple[str, str] = ("x", "y"),
+    save: bool = True,
+    show: bool = True,
+):
+    """
+         Plot multiple lines in one plot
+
+    Args:
+        xs (list): List of x values for each line
+        legneds (list[str]): List of legends for each line
+        title (str): Title of the plot
+        ax_labels (tuple[str, str], optional): Labels of the x and y axis. Defaults to ("x", "y").
+        save (bool, optional): Save the plot. Defaults to True.
+        show (bool, optional): Show the plot. Defaults to True.
+    """
     # Set figure size
     plt.figure(figsize=(10, 6))
 
@@ -247,6 +266,7 @@ def plot_multiple_lines(xs, legneds, title, ax_labels=("x", "y"), save=True, sho
     # Show the figure
     if show:
         plt.show()
+    plt.close()
 
 
 def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=None):
@@ -264,7 +284,7 @@ def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=
     plt.title("Confustion Matrix")
 
     if save:
-        if not sub_dir is None:
+        if sub_dir is not None:
             if not isinstance(epoch, int):
                 raise RuntimeError(
                     f"Epochs needed for subdir conv epoch: {epoch} type: {type(epoch)}"
@@ -282,6 +302,7 @@ def plot_confustion_matrix(y, y_hat, show=True, save=False, sub_dir=None, epoch=
 
     if show:
         plt.show()
+    plt.close()
 
 
 def main():
