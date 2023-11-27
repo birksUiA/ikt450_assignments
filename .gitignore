@@ -3,3 +3,4 @@ tags
 tags.*
 venv/
 *.zip
+__pycache__/
