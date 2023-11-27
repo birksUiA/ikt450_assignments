@@ -20,19 +20,19 @@ def main():
         path_x=dataloader.paths_real["training"][0],
         path_y=dataloader.paths_real["training"][1],
         image_size=image_size,
-        subset_procent=0.05,
+        subset_procent=0.20,
     )
     data_validation = dataloader.load_data_pair_no_label(
         path_x=dataloader.paths_real["validation"][0],
         path_y=dataloader.paths_real["validation"][1],
         image_size=image_size,
-        subset_procent=0.05,
+        subset_procent=0.20,
     )
     data_evaluation = dataloader.load_data_pair_no_label(
         path_x=dataloader.paths_real["evaluation"][0],
         path_y=dataloader.paths_real["evaluation"][1],
         image_size=image_size,
-        subset_procent=0.05,
+        subset_procent=0.20,
     )
     # print lengths of datasets
 
@@ -140,8 +140,14 @@ def main():
         image_y_pred = autoencoder.predict(image_x.reshape(1, *image_x.shape))
         image_y_pred = image_y_pred.reshape(image_size + (3,))
         axs[0, i].imshow(image_x)
+        if i == 1:
+            axs[0, i].set_title(f"Input")
         axs[1, i].imshow(image_y)
+        if i == 1:
+            axs[1, i].set_title(f"Target")
         axs[2, i].imshow(image_y_pred)
+        if i == 1:
+            axs[2, i].set_title(f"Prediction")
 
     plt.savefig(helper.static_name.get_timed_file_path(
              file_name=f"images"
