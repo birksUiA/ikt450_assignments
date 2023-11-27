@@ -56,7 +56,7 @@ def main():
         plt.close()
 
     data_training = data_training.batch(8)
-    data_validation = data_training.batch(8)
+    data_validation = data_validation.batch(8)
     # Time to build the model
     # Auto encoder
     for image_x, image_y in data_training.take(1):
