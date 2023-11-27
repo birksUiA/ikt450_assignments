@@ -44,7 +44,7 @@ def main():
         "accuracy",
     ]
 
-    initial_learning_rate = 0.01
+    initial_learning_rate = 0.001
 
     ## Compile the model - so that
     model.compile(
