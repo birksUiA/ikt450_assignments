@@ -1,11 +1,14 @@
+import custemcallbacks
 import keras
 import dataloader
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
-
+import helper
 
 def main():
+    # set up helper 
+    helper.static_name.model_name = "autoencoder"
     # stop
     image_size = (244, 244)
     data_test = dataloader.load_data_pair_no_label(
@@ -53,6 +56,7 @@ def main():
         plt.close()
 
     data_training = data_training.batch(8)
+    data_validation = data_training.batch(8)
     # Time to build the model
     # Auto encoder
     for image_x, image_y in data_training.take(1):
@@ -78,6 +82,10 @@ def main():
 
     autoencoder.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
     autoencoder.summary()
+    callback_list = [
+        custemcallbacks.SaveBestModel(),
+        custemcallbacks.LogMetricsToCSV(),
+    ]
 
     # fit the model
     history = autoencoder.fit(
@@ -86,8 +94,9 @@ def main():
         batch_size=8,
         shuffle=True,
         validation_data=data_validation,
+        callbacks=callback_list,
     )
-    
+    autoencoder.save("final_model") 
 
 if __name__ == "__main__":
     main()
