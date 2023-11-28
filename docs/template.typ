@@ -12,7 +12,6 @@
   )
   set text(font: "Noto Sans", size: 10pt)
   
-  show raw: set text(font: "JetBrainsMono Nerd Font")
   show raw.where(block: true): it => {
     set par(justify: false);
     set text(size: 8pt);

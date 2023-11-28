@@ -29,3 +29,4 @@
 #pagebreak()
 #include "sections/7-assignment.typ"
 #pagebreak()
+#bibliography("refrences.bib")
