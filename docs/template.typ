@@ -1,8 +1,8 @@
-#let project(title: "", authors: (), body) = {
+#let project(title: "", subtitle: "", header: "", authors: (), body) = {
   set page(
     margin: 1.25in,
     numbering: "1 of 1",
-    header: align(right, "IKT450 Deep Neural Networks"),
+    header: align(right, header),
   )
   
   set heading(numbering: "1.1 ")
@@ -30,7 +30,8 @@
   align(center)[
     #pad(top: 0.5em, bottom: 2em)[
       #block(text(weight: 500, 1.75em, title))
-      #pad(top: 1em, block(text(weight: 500, 1.2em, "Group Teapot")))
+      #pad(top: 0.5em, bottom: 1.3em, block(text(weight: 500, 1.2em, subtitle)))
+       
       #block(
         grid(
           columns: (1fr,) * authors.len(),
@@ -42,7 +43,7 @@
         )
       )
       #v(15pt)
-      #block(text(weight: 500, 1.2em, "IKT450"))
+      #block(text(weight: 500, 1.2em, ""))
       #block(text(weight: 500, 1.2em, datetime.today().display())) 
       #v(15pt)
     ]

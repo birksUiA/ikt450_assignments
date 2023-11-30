@@ -2,9 +2,10 @@
 
 #show: project.with(
   title: "Weekly Assignments",
+  subtitle: "IKT450 - Deep Neural Networks",
+  header: "IKT450 - Deep Neural Networks",
   authors: (
     (name: "Mathias Birk Olsen", email: "mathiasbol"),
-    (name: "Mathias Birk Olsen", email: "mathiasbol")
   ),
 )
 
